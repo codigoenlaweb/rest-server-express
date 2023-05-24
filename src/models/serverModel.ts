@@ -3,13 +3,13 @@ import express, { Request, Response } from "express";
 // third apps
 import cors from "cors";
 // Routes
-import { crudRoutes } from "../routes/crudsRoutes";
+import { usersRouter } from "../routes/usersRouter";
 
 export class serverModel {
   private app: express.Application;
   private port: string;
   private apiPaths = {
-    cruds: "/api/cruds",
+    users: "/api/users",
   };
 
   constructor() {
@@ -37,7 +37,7 @@ export class serverModel {
 
   // Define routes
   routes() {
-    this.app.use(this.apiPaths.cruds, crudRoutes);
+    this.app.use(this.apiPaths.users, usersRouter);
   }
 
   listen() {
