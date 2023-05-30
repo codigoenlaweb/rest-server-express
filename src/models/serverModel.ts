@@ -1,9 +1,10 @@
 // express
-import express, { Request, Response } from "express";
+import express from "express";
 // third apps
 import cors from "cors";
 // Routes
-import { usersRouter } from "../routes/usersRouter";
+import { userRouter } from "../routes/userRouter";
+import { dbConection } from "../database/config";
 
 export class serverModel {
   private app: express.Application;
@@ -15,6 +16,9 @@ export class serverModel {
   constructor() {
     this.app = express();
     this.port = process.env.PORT || "3000";
+
+    // Connect to database
+    this.connectDB();
 
     // Middlewares
     this.middlewares();
@@ -37,7 +41,11 @@ export class serverModel {
 
   // Define routes
   routes() {
-    this.app.use(this.apiPaths.users, usersRouter);
+    this.app.use(this.apiPaths.users, userRouter);
+  }
+
+  async connectDB() {
+    await dbConection();
   }
 
   listen() {
