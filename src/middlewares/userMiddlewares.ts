@@ -1,5 +1,4 @@
-import { RoleModel } from "../models/RoleModel";
-import { UserModel } from "../models/userModel";
+import { RoleModel, UserModel } from "../models";
 
 export const roleValidate = async (role: string) => {
   const roleExistInDb = await RoleModel.exists({ role });

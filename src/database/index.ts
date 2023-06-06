@@ -1,0 +1,2 @@
+export { dbConection } from "./config";
+

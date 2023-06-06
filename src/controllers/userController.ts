@@ -2,24 +2,25 @@
 import { Request, Response } from "express";
 // third party
 import bcryptjs from "bcryptjs";
-// models
-import { UserModel } from "../models/userModel";
-import { paginatedResponse } from "../helper/paginatedResponse";
+// app
+import { paginatedResponse } from "../helper";
+import { UserModel } from "../models";
 
 // Get all Users
 export const getUsersController = async (req: Request, res: Response) => {
   // query params
+  
   const { limit = 15, page = 0 } = req.query;
-
+  
   const [data, count] = await Promise.all([
     // get users
     UserModel.find({ deleted: false })
-      .limit(Number(limit))
-      .skip(Number(page) * Number(limit)),
+    .limit(Number(limit))
+    .skip(Number(page) * Number(limit)),
     // get total users
     UserModel.countDocuments({ deleted: false }),
   ]);
-
+  
   paginatedResponse({
     res,
     count,

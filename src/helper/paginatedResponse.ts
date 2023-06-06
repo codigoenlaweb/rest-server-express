@@ -15,19 +15,20 @@ export const paginatedResponse = ({
   page,
   limit,
 }: PaginatedResponse) => {
+  
   const next =
-    Number(page) + 1 < Math.ceil(count / Number(limit))
-      ? `http://localhost:3000/api/users?limit=${limit}&page=${
-          Number(page) + 1
-        }`
-      : null;
+  Number(page) + 1 < Math.ceil(count / Number(limit))
+  ? `http://localhost:3000/api/users?limit=${limit}&page=${
+    Number(page) + 1
+  }`
+  : null;
   const prev =
-    Number(page) > 0
-      ? `http://localhost:3000/api/users?limit=${limit}&page=${
-          Number(page) - 1
-        }`
-      : null;
-
+  Number(page) > 0
+  ? `http://localhost:3000/api/users?limit=${limit}&page=${
+    Number(page) - 1
+  }`
+  : null;
+  
   res.json({
     meta: {
       count: count,
