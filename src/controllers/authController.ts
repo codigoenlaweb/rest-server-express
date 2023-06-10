@@ -4,7 +4,7 @@ import { UserModel } from "../models";
 // third party
 import bcryptjs from "bcryptjs";
 // app
-import { errorResponse, generateJWT } from "../helper";
+import { errorResponse, generateJWT, googleVerify } from "../helper";
 
 // Login
 export const loginController = async (req: Request, res: Response) => {
@@ -53,6 +53,59 @@ export const loginController = async (req: Request, res: Response) => {
     console.log(error);
     res.status(500).json({
       msg: "Error in the server, this error is from authController.ts file and loginController function. Please contact with the administrator.",
+    });
+  }
+};
+
+export const googleController = async (req: Request, res: Response) => {
+  const { id_token } = req.body;
+
+  try {
+    const payload = await googleVerify(id_token);
+    
+    let user = await UserModel.findOne({ email: payload.email });
+    
+    if (!user) {
+      // create the user
+      const data = {
+        name: payload.name,
+        email: payload.email,
+        password: ":P",
+        avatar: payload.picture,
+        role: "USER_ROLE",
+        google: true,
+      };
+      
+      user = new UserModel(data);
+      console.log('biennn', user);
+      await user.save();
+    }
+
+    // verify if the user is active
+    if (user.deleted) {
+      return errorResponse({
+        res,
+        value: user.email,
+        msg: "Your account is not active, please contact with support",
+        status: 401,
+      });
+    }
+
+    // generate the JWT
+    const token = await generateJWT(user.id);
+
+    res.json({
+      data: {
+        user,
+        token,
+      },
+    });
+  } catch (error) {
+    console.log('catch');
+    errorResponse({
+      res,
+      value: id_token,
+      msg: "The token is not valid",
     });
   }
 };

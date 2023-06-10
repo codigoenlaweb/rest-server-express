@@ -5,7 +5,7 @@ import { check } from "express-validator";
 // middlewares
 import { validateFields } from "../middlewares/validateFields";
 // controllers
-import { loginController } from "../controllers/authController";
+import { googleController, loginController } from "../controllers/authController";
 
 // Router
 export const authRouter = Router();
@@ -19,6 +19,10 @@ authRouter.post("/login", [
     validateFields,
 ], loginController);
 
+authRouter.post("/google", [
+    check("id_token", "id_token is required").not().isEmpty(),
+    validateFields,
+], googleController);
 
 
 

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Google Sign in</title>
+  </head>
+  <body>
+    <h1>Google Sign in</h1>
+    <div
+      id="g_id_onload"
+      data-client_id="1002856124991-4qji1vvar9m0n4c7hphdhnjmg5kmpf1v.apps.googleusercontent.com"
+      data-callback="handleCredentialResponse"
+      data-auto_prompt="false"
+    ></div>
+    <div
+      class="g_id_signin"
+      data-type="standard"
+      data-size="large"
+      data-theme="outline"
+      data-text="sign_in_with"
+      data-shape="rectangular"
+      data-logo_alignment="left"
+    ></div>
+
+    <button id="btnGoogleLogout">Logout</button>
+
+    <!-- scripts -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script>
+      function handleCredentialResponse(response) {
+        fetch("http://localhost:8001/api/auth/google", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id_token: response.credential,
+          }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            localStorage.setItem("email", data.data.user.email)
+          })
+          .catch((err) => console.log(err));
+      }
+
+      document
+        .querySelector("#btnGoogleLogout")
+        .addEventListener("click", () => {
+          console.log("logout");
+          google.accounts.id.disableAutoSelect();
+
+          google.accounts.id.revoke(localStorage.getItem('email') , () => {
+            location.reload();
+          });
+        });
+    </script>
+  </body>
+</html>

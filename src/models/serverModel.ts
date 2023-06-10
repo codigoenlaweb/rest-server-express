@@ -37,7 +37,7 @@ export class serverModel {
     this.app.use(express.json());
 
     // Public folder
-    this.app.use("static", express.static("public"));
+    this.app.use(express.static("public"));
   }
 
   // Define routes
