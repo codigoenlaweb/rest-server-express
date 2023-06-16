@@ -2,7 +2,9 @@ import mongoose from "mongoose";
 
 export const dbConection = async () => {
     try {
-        await mongoose.connect(process.env.DATABASE_URL || '', {});
+        await mongoose.connect(process.env.DATABASE_URL || '', {
+            maxPoolSize: 10,
+        });
         console.log('Database online 🚀');
     } catch (error) {
         console.log(error);

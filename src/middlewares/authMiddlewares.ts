@@ -76,6 +76,7 @@ export const adminAuthMiddleware = (
     });
   }
 
+  next();
 };
 
 export const thereIsRole = (...roles: string[]) => {

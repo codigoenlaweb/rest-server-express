@@ -22,7 +22,7 @@ export const loginController = async (req: Request, res: Response) => {
     }
 
     // verify if the user is active
-    if (!user.deleted) {
+    if (user.deleted) {
       return errorResponse({
         res,
         value: email,
@@ -76,8 +76,7 @@ export const googleController = async (req: Request, res: Response) => {
         google: true,
       };
       
-      user = new UserModel(data);
-      console.log('biennn', user);
+      user = new UserModel({});
       await user.save();
     }
 

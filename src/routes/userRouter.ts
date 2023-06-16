@@ -30,7 +30,6 @@ userRouter.get("/", [userAuthMiddleware, validateFields], getUsersController);
 userRouter.post(
   "/",
   [
-    userAuthMiddleware,
     check("name", "The name is required").not().isEmpty(),
     check("email", "The email is required").not().isEmpty(),
     check("email", "The email is invalid").isEmail(),

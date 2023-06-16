@@ -4,7 +4,13 @@ import express from "express";
 import cors from "cors";
 // Routes
 import { dbConection } from "../database";
-import { authRouter, userRouter } from "../routes";
+import {
+  authRouter,
+  categoryRouter,
+  productRouter,
+  searchRouter,
+  userRouter,
+} from "../routes";
 
 export class serverModel {
   private app: express.Application;
@@ -12,6 +18,9 @@ export class serverModel {
   private apiPaths = {
     auth: "/api/auth",
     users: "/api/users",
+    category: "/api/categories",
+    products: "/api/products",
+    search: "/api/search",
   };
 
   constructor() {
@@ -44,6 +53,9 @@ export class serverModel {
   routes() {
     this.app.use(this.apiPaths.auth, authRouter);
     this.app.use(this.apiPaths.users, userRouter);
+    this.app.use(this.apiPaths.category, categoryRouter);
+    this.app.use(this.apiPaths.products, productRouter);
+    this.app.use(this.apiPaths.search, searchRouter);
   }
 
   async connectDB() {

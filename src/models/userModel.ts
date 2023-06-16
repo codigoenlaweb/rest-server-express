@@ -1,6 +1,16 @@
 import { Document, model, Schema } from "mongoose";
 
-const userSchema = new Schema({
+export interface IUserSchema {
+  name: string;
+  email: string;
+  password: string;
+  avatar?: string;
+  role: string;
+  deleted?: boolean;
+  google?: boolean;
+}
+
+const userSchema = new Schema<IUserSchema>({
   name: {
     type: String,
     required: [true, "The name is required"],
@@ -32,19 +42,13 @@ const userSchema = new Schema({
   },
 });
 
-export interface IUserSchema {
-  name: string;
-  email: string;
-  password: string;
-  avatar?: string;
-  role: string;
-  deleted?: boolean;
-  google?: boolean;
-}
+userSchema.set("toJSON", {
+  transform: (document, returnedObject) => {
+    returnedObject.uid = returnedObject._id.toString();
+    delete returnedObject._id;
+    delete returnedObject.__v;
+    delete returnedObject.password;
+  },
+});
 
-userSchema.methods.toJSON = function () {
-  const { __v, password, _id, ...user } = this.toObject();
-  return { uid: _id, ...user };
-};
-
-export const UserModel = model("User", userSchema);
+export const UserModel = model<IUserSchema>("User", userSchema);

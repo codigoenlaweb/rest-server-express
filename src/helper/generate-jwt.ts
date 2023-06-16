@@ -7,7 +7,6 @@ export const generateJWT = ( uid: string ) => {
             expiresIn: '4h'
         }, (err, token) => {
             if ( err ) {
-                console.log(err)
                 reject('No se pudo generar el JWT')
             } else {
                 resolve( token )
