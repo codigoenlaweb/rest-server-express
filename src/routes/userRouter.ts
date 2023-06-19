@@ -3,29 +3,23 @@ import { Router } from "express";
 // third party
 import { check } from "express-validator";
 // middlewares
-import { validateFields } from "../middlewares/validateFields";
 import {
-  emailExistInDb,
-  roleValidate,
-  userExistInDb,
-} from "../middlewares/userMiddlewares";
-import {
-  userAuthMiddleware,
-  adminAuthMiddleware,
-} from "../middlewares/authMiddlewares";
+  AuthMiddlewares,
+  UserMiddlewares,
+  validateFields,
+} from "../middlewares";
 // controllers
-import {
-  deleteUserController,
-  getUsersController,
-  postUserController,
-  putUserController,
-} from "../controllers/userController";
+import { UserController } from "../controllers";
 
 // Router
 export const userRouter = Router();
 
 // Routes
-userRouter.get("/", [userAuthMiddleware, validateFields], getUsersController);
+userRouter.get(
+  "/",
+  [AuthMiddlewares.userAuth, validateFields],
+  UserController.getAll
+);
 
 userRouter.post(
   "/",
@@ -33,40 +27,39 @@ userRouter.post(
     check("name", "The name is required").not().isEmpty(),
     check("email", "The email is required").not().isEmpty(),
     check("email", "The email is invalid").isEmail(),
-    check("email").custom(emailExistInDb),
+    check("email").custom(UserMiddlewares.emailExistInDb),
     check("password", "The password is required").not().isEmpty(),
     check("password", "The password must be 6 characters").isLength({ min: 6 }),
-    check("role").custom(roleValidate),
+    check("role").custom(UserMiddlewares.roleValidate),
     validateFields,
   ],
-  postUserController
+  UserController.create
 );
 
 userRouter.put(
   "/:id",
   [
-    userAuthMiddleware,
-    check("id", "The id is invalid").isMongoId(),
-    check("id").custom(userExistInDb),
+    AuthMiddlewares.userAuth,
+    UserMiddlewares.existInDb,
     check("name", "The name is required").not().isEmpty(),
     check("email", "The email is required").not().isEmpty(),
     check("email", "The email is invalid").isEmail(),
-    check("email").custom(emailExistInDb),
+    check("email").custom(UserMiddlewares.emailExistInDb),
     check("password", "The password is required").not().isEmpty(),
     check("password", "The password must be 6 characters").isLength({ min: 6 }),
-    check("role").custom(roleValidate),
+    check("role").custom(UserMiddlewares.roleValidate),
     validateFields,
   ],
-  putUserController
+  UserController.update
 );
 
 userRouter.delete(
   "/:id",
   [
-    adminAuthMiddleware,
-    check("id", "The id is invalid").isMongoId(),
-    check("id").custom(userExistInDb),
+    AuthMiddlewares.userAuth,
+    AuthMiddlewares.adminAuth,
+    UserMiddlewares.existInDb,
     validateFields,
   ],
-  deleteUserController
+  UserController.delete
 );

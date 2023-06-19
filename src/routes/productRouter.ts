@@ -3,42 +3,31 @@ import { Router } from "express";
 // third party
 import { check } from "express-validator";
 // middlewares
-import { validateFields } from "../middlewares/validateFields";
 import {
-  adminAuthMiddleware,
-  userAuthMiddleware,
-} from "../middlewares/authMiddlewares";
+  AuthMiddlewares,
+  CategoryMiddlewares,
+  ProductMiddlewares,
+  validateFields,
+} from "../middlewares";
 // controllers
-import {
-  CreateProductController,
-  DeleteProductController,
-  GetAllProductController,
-  GetProductByIdController,
-  UpdateProductController
-} from "../controllers/productController";
-import { categoryExistInDb } from "../middlewares/categoryMiddlewares";
-import { prodcutExistInDb } from "../middlewares/productMiddlewares";
+import { ProductController } from "../controllers";
 
 // Router
 export const productRouter = Router();
 
 // Routes
-productRouter.get("/", GetAllProductController);
+productRouter.get("/", ProductController.getAll);
 
 productRouter.get(
-  "/:product_id",
-  [
-    check("product_id", "The id is invalid").isMongoId(),
-    check("product_id").custom(prodcutExistInDb),
-    validateFields,
-  ],
-  GetProductByIdController
+  "/:id",
+  [ProductMiddlewares.existInDb, validateFields],
+  ProductController.getById
 );
 
 productRouter.post(
   "/",
   [
-    userAuthMiddleware,
+    AuthMiddlewares.userAuth,
     check("name", "The name is required").not().isEmpty(),
     check("name", "The name must have at least 2 characters").isLength({
       min: 2,
@@ -47,43 +36,39 @@ productRouter.post(
       max: 140,
     }),
     check("price", "The price is not valid").isNumeric(),
-    check("category_id", "The id is invalid").isMongoId(),
-    check("category_id").custom(categoryExistInDb),
+    check("category_id").custom(CategoryMiddlewares.categoryExistInDb),
     validateFields,
   ],
-  CreateProductController
+  ProductController.create
 );
 
 productRouter.put(
-  "/:product_id",
+  "/:id",
   [
-    userAuthMiddleware,
-    check("product_id", "The id is invalid").isMongoId(),
-    check("product_id").custom(prodcutExistInDb),
+    AuthMiddlewares.userAuth,
+    ProductMiddlewares.existInDb,
     check("name", "The name is required").not().isEmpty(),
     check("name", "The name must have at least 3 characters").isLength({
       min: 3,
     }),
     check("name", "The name must not have more than 140 characters.").isLength({
-        max: 140,
+      max: 140,
     }),
     check("price", "The price is not valid").isNumeric(),
     check("available", "The available is not valid").isBoolean(),
-    check("category_id", "The id is invalid").isMongoId(),
-    check("category_id").custom(categoryExistInDb),
+    check("category_id").custom(CategoryMiddlewares.categoryExistInDb),
     validateFields,
   ],
-  UpdateProductController
+  ProductController.update
 );
 
 productRouter.delete(
-  "/:product_id",
+  "/:id",
   [
-    userAuthMiddleware,
-    adminAuthMiddleware,
-    check("product_id", "The id is invalid").isMongoId(),
-    check("product_id").custom(prodcutExistInDb),
+    AuthMiddlewares.userAuth,
+    AuthMiddlewares.adminAuth,
+    ProductMiddlewares.existInDb,
     validateFields,
   ],
-  DeleteProductController
+  ProductController.delete
 );

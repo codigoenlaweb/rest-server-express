@@ -3,41 +3,30 @@ import { Router } from "express";
 // third party
 import { check } from "express-validator";
 // middlewares
-import { categoryExistInDb, categoryExistInDbByName } from "../middlewares/categoryMiddlewares";
-import { validateFields } from "../middlewares/validateFields";
 import {
-  adminAuthMiddleware,
-  userAuthMiddleware,
-} from "../middlewares/authMiddlewares";
+  AuthMiddlewares,
+  CategoryMiddlewares,
+  validateFields,
+} from "../middlewares";
 // controllers
-import {
-  CreateCategoryController,
-  DeleteCategoryController,
-  GetAllCategoryController,
-  GetCategoryByIdController,
-  UpdateCategoryController,
-} from "../controllers/categoryController";
+import { CategoryController } from "../controllers";
 
 // Router
 export const categoryRouter = Router();
 
 // Routes
-categoryRouter.get("/", GetAllCategoryController);
+categoryRouter.get("/", CategoryController.getAll);
 
 categoryRouter.get(
-  "/:category_id",
-  [
-    check("category_id", "The id is invalid").isMongoId(),
-    check("category_id").custom(categoryExistInDb),
-    validateFields,
-  ],
-  GetCategoryByIdController
+  "/:id",
+  [CategoryMiddlewares.existInDb, validateFields],
+  CategoryController.getById
 );
 
 categoryRouter.post(
   "/",
   [
-    userAuthMiddleware,
+    AuthMiddlewares.userAuth,
     check("name", "The name is required").not().isEmpty(),
     check("name", "The name must have at least 3 characters").isLength({
       min: 3,
@@ -45,39 +34,37 @@ categoryRouter.post(
     check("name", "The name must not have more than 140 characters.").isLength({
       max: 140,
     }),
-    categoryExistInDbByName,
     validateFields,
+    CategoryMiddlewares.existInDbByName,
   ],
-  CreateCategoryController
+  CategoryController.create
 );
 
 categoryRouter.put(
-  "/:category_id",
+  "/:id",
   [
-    userAuthMiddleware,
-    check("category_id", "The id is invalid").isMongoId(),
-    check("category_id").custom(categoryExistInDb),
+    AuthMiddlewares.userAuth,
+    CategoryMiddlewares.existInDb,
     check("name", "The name is required").not().isEmpty(),
     check("name", "The name must have at least 3 characters").isLength({
       min: 3,
     }),
     check("name", "The name must not have more than 140 characters.").isLength({
-        max: 140,
+      max: 140,
     }),
-    categoryExistInDbByName,
     validateFields,
+    CategoryMiddlewares.existInDbByName,
   ],
-  UpdateCategoryController
+  CategoryController.update
 );
 
 categoryRouter.delete(
-  "/:category_id",
+  "/:id",
   [
-    userAuthMiddleware,
-    adminAuthMiddleware,
-    check("category_id", "The id is invalid").isMongoId(),
-    check("category_id").custom(categoryExistInDb),
+    AuthMiddlewares.userAuth,
+    AuthMiddlewares.adminAuth,
+    CategoryMiddlewares.existInDb,
     validateFields,
   ],
-  DeleteCategoryController
+  CategoryController.delete
 );

@@ -19,7 +19,7 @@ export const errorResponse = ({
   location = "body",
   status = 400,
 }: Props) => {
-  res.status(status).json([
+  res.status(status).json({ errors: [
     {
       type: type,
       value: value,
@@ -27,6 +27,6 @@ export const errorResponse = ({
       path: path,
       location: location,
     }, 
-  ]);
+  ]});
 };
  

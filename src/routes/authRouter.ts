@@ -3,9 +3,9 @@ import { Router } from "express";
 // third party
 import { check } from "express-validator";
 // middlewares
-import { validateFields } from "../middlewares/validateFields";
+import { validateFields } from "../middlewares";
 // controllers
-import { googleController, loginController } from "../controllers/authController";
+import { AuthController } from "../controllers";
 
 // Router
 export const authRouter = Router();
@@ -17,12 +17,12 @@ authRouter.post("/login", [
     check("password", "Password is required").not().isEmpty(),
     check("password", "The password must be 6 characters").isLength({ min: 6 }),
     validateFields,
-], loginController);
+], AuthController.login);
 
 authRouter.post("/google", [
     check("id_token", "id_token is required").not().isEmpty(),
     validateFields,
-], googleController);
+], AuthController.googleSignIn);
 
 
 
