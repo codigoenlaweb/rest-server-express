@@ -8,6 +8,14 @@ import { AuthRequest } from "../interfaces/generalsInterface";
 import { IProductSchema, ProductModel } from "../models";
 
 class ProductController {
+  constructor() {
+    this.create = this.create.bind(this);
+    this.update = this.update.bind(this);
+    this.delete = this.delete.bind(this);
+    this.getAll = this.getAll.bind(this);
+    this.getById = this.getById.bind(this);
+  }
+
   // Get all products
   public async getAll(req: Request, res: Response) {
     const { limit = 15, page = 0 } = req.query;

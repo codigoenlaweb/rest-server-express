@@ -2,13 +2,15 @@
 import express from "express";
 // third apps
 import cors from "cors";
-// Routes
+import fileUpload from "express-fileupload";
+// App
 import { dbConection } from "../database";
 import {
   authRouter,
   categoryRouter,
   productRouter,
   searchRouter,
+  uploadRouter,
   userRouter,
 } from "../routes";
 
@@ -17,10 +19,11 @@ export class serverModel {
   private port: string;
   private apiPaths = {
     auth: "/api/auth",
-    users: "/api/users",
     category: "/api/categories",
     products: "/api/products",
     search: "/api/search",
+    upload: "/api/uploads",
+    users: "/api/users",
   };
 
   constructor() {
@@ -47,6 +50,15 @@ export class serverModel {
 
     // Public folder
     this.app.use(express.static("public"));
+
+    // File upload
+    this.app.use(
+      fileUpload({
+        useTempFiles: true,
+        tempFileDir: "/tmp/",
+        createParentPath: true,
+      })
+    );
   }
 
   // Define routes
@@ -56,6 +68,7 @@ export class serverModel {
     this.app.use(this.apiPaths.category, categoryRouter);
     this.app.use(this.apiPaths.products, productRouter);
     this.app.use(this.apiPaths.search, searchRouter);
+    this.app.use(this.apiPaths.upload, uploadRouter);
   }
 
   async connectDB() {

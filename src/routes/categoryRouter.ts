@@ -4,8 +4,8 @@ import { Router } from "express";
 import { check } from "express-validator";
 // middlewares
 import {
-  AuthMiddlewares,
-  CategoryMiddlewares,
+  AuthMiddleware,
+  CategoryMiddleware,
   validateFields,
 } from "../middlewares";
 // controllers
@@ -19,14 +19,14 @@ categoryRouter.get("/", CategoryController.getAll);
 
 categoryRouter.get(
   "/:id",
-  [CategoryMiddlewares.existInDb, validateFields],
+  [CategoryMiddleware.existInDb, validateFields],
   CategoryController.getById
 );
 
 categoryRouter.post(
   "/",
   [
-    AuthMiddlewares.userAuth,
+    AuthMiddleware.userAuth,
     check("name", "The name is required").not().isEmpty(),
     check("name", "The name must have at least 3 characters").isLength({
       min: 3,
@@ -35,7 +35,7 @@ categoryRouter.post(
       max: 140,
     }),
     validateFields,
-    CategoryMiddlewares.existInDbByName,
+    CategoryMiddleware.existInDbByName,
   ],
   CategoryController.create
 );
@@ -43,8 +43,8 @@ categoryRouter.post(
 categoryRouter.put(
   "/:id",
   [
-    AuthMiddlewares.userAuth,
-    CategoryMiddlewares.existInDb,
+    AuthMiddleware.userAuth,
+    CategoryMiddleware.existInDb,
     check("name", "The name is required").not().isEmpty(),
     check("name", "The name must have at least 3 characters").isLength({
       min: 3,
@@ -53,7 +53,7 @@ categoryRouter.put(
       max: 140,
     }),
     validateFields,
-    CategoryMiddlewares.existInDbByName,
+    CategoryMiddleware.existInDbByName,
   ],
   CategoryController.update
 );
@@ -61,9 +61,9 @@ categoryRouter.put(
 categoryRouter.delete(
   "/:id",
   [
-    AuthMiddlewares.userAuth,
-    AuthMiddlewares.adminAuth,
-    CategoryMiddlewares.existInDb,
+    AuthMiddleware.userAuth,
+    AuthMiddleware.adminAuth,
+    CategoryMiddleware.existInDb,
     validateFields,
   ],
   CategoryController.delete

@@ -7,6 +7,11 @@ import bcryptjs from "bcryptjs";
 import { errorResponse, generateJWT, googleVerify } from "../helper";
 
 class AuthController {
+  constructor() {
+    this.login = this.login.bind(this);
+    this.googleSignIn = this.googleSignIn.bind(this);
+  }
+  
   // Login
   public async login(req: Request, res: Response) {
     const { email, password } = req.body;

@@ -5,6 +5,7 @@ export interface IProductSchema {
   description?: string;
   available?: boolean;
   price?: number;
+  image?: string;
   deleted?: boolean;
   user: Types.ObjectId;
   category: Types.ObjectId;
@@ -25,7 +26,10 @@ const productSchema = new Schema<IProductSchema>({
   available: {
     type: Boolean,
     default: true,
-  }, 
+  },
+  image: {
+    type: String,
+  },
   deleted: {
     type: Boolean,
     default: false,

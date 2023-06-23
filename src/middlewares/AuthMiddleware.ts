@@ -5,6 +5,12 @@ import { UserModel } from "../models/userModel";
 import { AuthRequest } from "../interfaces/generalsInterface";
 
 class AuthMiddleware {
+  constructor() {
+    this.userAuth = this.userAuth.bind(this);
+    this.adminAuth = this.adminAuth.bind(this);
+    this.thereIsRole = this.thereIsRole.bind(this);
+  }
+
   // check if user exist in db (blocker)
   public async userAuth(req: AuthRequest, res: Response, next: NextFunction) {
     const token = req.header("x-token");

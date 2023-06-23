@@ -2,7 +2,13 @@ import { NextFunction, Request, Response } from "express";
 import { RoleModel, UserModel } from "../models";
 import { errorResponse } from "../helper";
 
-class UserMiddlewares {
+class UserMiddleware {
+  constructor() {
+    this.existInDb = this.existInDb.bind(this);
+    this.roleValidate = this.roleValidate.bind(this);
+    this.emailExistInDb = this.emailExistInDb.bind(this);
+  }
+  
   // check if user exist in db (blocker)
   public async existInDb(req: Request, res: Response, next: NextFunction) {
     const _id = req.params.id;
@@ -47,4 +53,4 @@ class UserMiddlewares {
   }
 }
 
-export default new UserMiddlewares();
+export default new UserMiddleware();

@@ -10,6 +10,10 @@ import {
 } from "../queries/searchQueries";
 
 class SearchController {
+  constructor() {
+    this.Search = this.Search.bind(this);
+  }
+  
   // atributes
   public collectionPermitted = ["users", "categories", "products"];
 

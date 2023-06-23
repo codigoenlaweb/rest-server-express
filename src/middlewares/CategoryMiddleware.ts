@@ -3,6 +3,12 @@ import { CategoryModel } from "../models";
 import { errorResponse } from "../helper";
 
 class CategoryMiddlwares {
+  constructor() {
+    this.existInDb = this.existInDb.bind(this);
+    this.existInDbByName = this.existInDbByName.bind(this);
+    this.categoryExistInDb = this.categoryExistInDb.bind(this);
+  }
+
   // check if category exist in db (blocker)
   public async existInDb(req: Request, res: Response, next: NextFunction) {
     const _id = req.params.id;

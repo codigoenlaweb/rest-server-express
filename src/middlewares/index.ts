@@ -1,13 +1,15 @@
 import { validateFields } from "./validateFields";
-import AuthMiddlewares from "./AuthMiddlewares";
-import CategoryMiddlewares from "./CategoryMiddlewares";
-import ProductMiddlewares from "./ProductMiddlewares";
-import UserMiddlewares from "./UserMiddlewares";
+import AuthMiddleware from "./AuthMiddleware";
+import CategoryMiddleware from "./CategoryMiddleware";
+import ProductMiddleware from "./ProductMiddleware";
+import UserMiddleware from "./UserMiddleware";
+import UploadMiddleware from "./UploadMiddleware";
 
 export {
-  AuthMiddlewares,
-  CategoryMiddlewares,
-  ProductMiddlewares,
-  UserMiddlewares,
+  AuthMiddleware,
+  CategoryMiddleware,
+  ProductMiddleware,
+  UserMiddleware,
+  UploadMiddleware,
   validateFields,
 };

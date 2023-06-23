@@ -4,9 +4,9 @@ import { Router } from "express";
 import { check } from "express-validator";
 // middlewares
 import {
-  AuthMiddlewares,
-  CategoryMiddlewares,
-  ProductMiddlewares,
+  AuthMiddleware,
+  CategoryMiddleware,
+  ProductMiddleware,
   validateFields,
 } from "../middlewares";
 // controllers
@@ -20,14 +20,14 @@ productRouter.get("/", ProductController.getAll);
 
 productRouter.get(
   "/:id",
-  [ProductMiddlewares.existInDb, validateFields],
+  [ProductMiddleware.existInDb, validateFields],
   ProductController.getById
 );
 
 productRouter.post(
   "/",
   [
-    AuthMiddlewares.userAuth,
+    AuthMiddleware.userAuth,
     check("name", "The name is required").not().isEmpty(),
     check("name", "The name must have at least 2 characters").isLength({
       min: 2,
@@ -36,7 +36,7 @@ productRouter.post(
       max: 140,
     }),
     check("price", "The price is not valid").isNumeric(),
-    check("category_id").custom(CategoryMiddlewares.categoryExistInDb),
+    check("category_id").custom(CategoryMiddleware.categoryExistInDb),
     validateFields,
   ],
   ProductController.create
@@ -45,8 +45,8 @@ productRouter.post(
 productRouter.put(
   "/:id",
   [
-    AuthMiddlewares.userAuth,
-    ProductMiddlewares.existInDb,
+    AuthMiddleware.userAuth,
+    ProductMiddleware.existInDb,
     check("name", "The name is required").not().isEmpty(),
     check("name", "The name must have at least 3 characters").isLength({
       min: 3,
@@ -56,7 +56,7 @@ productRouter.put(
     }),
     check("price", "The price is not valid").isNumeric(),
     check("available", "The available is not valid").isBoolean(),
-    check("category_id").custom(CategoryMiddlewares.categoryExistInDb),
+    check("category_id").custom(CategoryMiddleware.categoryExistInDb),
     validateFields,
   ],
   ProductController.update
@@ -65,9 +65,9 @@ productRouter.put(
 productRouter.delete(
   "/:id",
   [
-    AuthMiddlewares.userAuth,
-    AuthMiddlewares.adminAuth,
-    ProductMiddlewares.existInDb,
+    AuthMiddleware.userAuth,
+    AuthMiddleware.adminAuth,
+    ProductMiddleware.existInDb,
     validateFields,
   ],
   ProductController.delete

@@ -7,6 +7,13 @@ import { paginatedResponse } from "../helper";
 import { UserModel } from "../models";
 
 class UserController {
+  constructor() {
+    this.getAll = this.getAll.bind(this);
+    this.create = this.create.bind(this);
+    this.update = this.update.bind(this);
+    this.delete = this.delete.bind(this);
+  }
+  
   // Get all Users
   public async getAll(req: Request, res: Response) {
     // query params

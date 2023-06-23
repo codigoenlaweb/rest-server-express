@@ -8,6 +8,14 @@ import { CategoryModel, ICategorySchema } from "../models";
 import { HydratedDocument } from "mongoose";
 
 class CategoryController {
+  constructor() {
+    this.create = this.create.bind(this);
+    this.update = this.update.bind(this);
+    this.delete = this.delete.bind(this);
+    this.getAll = this.getAll.bind(this);
+    this.getById = this.getById.bind(this);
+  }
+  
   // get all category
   public async getAll(req: Request, res: Response) {
     const { limit = 15, page = 0 } = req.query;

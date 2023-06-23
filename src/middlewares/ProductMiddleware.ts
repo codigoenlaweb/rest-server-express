@@ -2,7 +2,11 @@ import e, { NextFunction, Request, Response } from "express";
 import { ProductModel } from "../models";
 import { errorResponse } from "../helper";
 
-class ProductMiddlewares {
+class ProductMiddleware {
+  constructor() {
+    this.existInDb = this.existInDb.bind(this);
+  }
+  
   // check if product exist in db (blocker)
   public async existInDb(req: Request, res: Response, next: NextFunction) {
     const _id = req.params.id;
@@ -30,4 +34,4 @@ class ProductMiddlewares {
     next();
   }
 }
-export default new ProductMiddlewares();
+export default new ProductMiddleware();
