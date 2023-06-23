@@ -24,7 +24,7 @@ export const uploadFIle = async ({
   files,
   extensionValid = extensionPermitted,
   extraPath = "",
-}: IUploadFile): Promise<string> => {
+}: IUploadFile): Promise<string | string[]> => {
   // if not array
   if (!Array.isArray(files)) {
     const fileExtension = getFileExtension(files.name);
@@ -36,7 +36,7 @@ export const uploadFIle = async ({
     const nameTemp = `${extraPath}${
       extraPath === "" ? "" : "/"
     }${uuidv4()}.${fileExtension}`;
-    
+
     const uploadPath: string = path.join(
       __dirname,
       "../../../upload/",
@@ -51,6 +51,34 @@ export const uploadFIle = async ({
 
     return nameTemp;
   } else {
-    throw new Error("File not found");
+    const namesTemp: string[] = [];
+
+    files.forEach((file) => {
+      const fileExtension = getFileExtension(file.name);
+
+      if (!extensionValid.includes(fileExtension as string)) {
+        throw new Error("File extension not permitted");
+      }
+
+      const nameTemp = `${extraPath}${
+        extraPath === "" ? "" : "/"
+      }${uuidv4()}.${fileExtension}`;
+
+      const uploadPath: string = path.join(
+        __dirname,
+        "../../../upload/",
+        nameTemp
+      );
+
+      file.mv(uploadPath, function (err) {
+        if (err) {
+          throw new Error("Error upload file");
+        }
+      });
+
+      namesTemp.push(nameTemp);
+    });
+
+    return namesTemp;
   }
 };
