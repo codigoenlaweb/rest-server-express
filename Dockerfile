@@ -5,7 +5,7 @@ WORKDIR /app
 # copiar package.json
 COPY package.json ./
 # instalar las dependencias de produccion
-RUN npm install --prod
+RUN npm install
 
 
 # Runner
