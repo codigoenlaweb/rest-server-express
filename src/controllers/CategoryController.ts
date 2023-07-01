@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 // app
 import { paginatedResponse } from "../helper";
 import { AuthRequest } from "../interfaces/generalsInterface";
-import { CategoryModel, ICategorySchema } from "../models";
+import { CategoryModel, ICategorySchema, ProductModel } from "../models";
 import { HydratedDocument } from "mongoose";
 
 class CategoryController {
@@ -15,14 +15,14 @@ class CategoryController {
     this.getAll = this.getAll.bind(this);
     this.getById = this.getById.bind(this);
   }
-  
+
   // get all category
   public async getAll(req: Request, res: Response) {
     const { limit = 15, page = 0 } = req.query;
 
     const [data, count] = await Promise.all([
       // get users
-      CategoryModel.find({ deleted: false })
+      CategoryModel.find({ deleted: false }, "name deleted")
         .populate("user", ["name", "email", "avatar", "role"])
         .limit(Number(limit))
         .skip(Number(page) * Number(limit)),
@@ -43,12 +43,13 @@ class CategoryController {
   public async getById(req: Request, res: Response) {
     const { id } = req.params;
 
-    const category = await CategoryModel.findById(id).populate("user", [
-      "name",
-      "email",
-      "avatar",
-      "role",
-    ]);
+    const category = await CategoryModel.findById(id)
+      .populate("user", ["name", "email", "avatar", "role"])
+      .populate({
+        path: "products",
+        select: ["name", "price", "description", "available", "deleted"],
+        populate: { path: "user", select: ["name", "email", "avatar", "role"] },
+      });
 
     res.json({
       data: category,
@@ -67,7 +68,7 @@ class CategoryController {
 
     await category.save();
 
-    res.json({
+    res.status(201).json({
       data: category,
     });
   }
@@ -84,7 +85,11 @@ class CategoryController {
     );
 
     res.json({
-      data: category,
+      data: {
+        name: category?.name,
+        deleted: category?.deleted,
+        uid: category?._id,
+      },
     });
   }
 
@@ -92,9 +97,12 @@ class CategoryController {
   public async delete(req: Request, res: Response) {
     const { id } = req.params;
 
-    await CategoryModel.findByIdAndUpdate(id, { deleted: true });
+    const [] = await Promise.all([
+      CategoryModel.findByIdAndUpdate(id, { deleted: true }),
+      ProductModel.updateMany({ category: id }, { deleted: true }),
+    ]);
 
-    res.json({});
+    res.status(204).json({});
   }
 }
 

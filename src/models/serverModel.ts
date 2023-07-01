@@ -81,5 +81,5 @@ export class serverModel {
         `Example app listening on host http://localhost:${this.port} 🚀`
       );
     });
-  }
+  } 
 }

@@ -1,6 +1,6 @@
 import { Request } from "express";
-import { IUserSchema } from "../models/userModel";
 import { HydratedDocument } from "mongoose";
+import { IUserSchema } from "../models/userModel";
 
 
 export interface AuthRequest extends Request {

@@ -13,7 +13,7 @@ const roleSchema = new Schema<IRoleSchema>({
 
 roleSchema.set("toJSON", {
   transform: (document, returnedObject) => {
-    returnedObject.uid = returnedObject._id.toString();
+    returnedObject.uid = document._id.toString();
     delete returnedObject._id;
     delete returnedObject.__v;
   },

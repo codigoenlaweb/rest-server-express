@@ -34,6 +34,6 @@ uploadRouter.put(
 
 uploadRouter.get(
   "/",
-  [AuthMiddleware.userAuth, UploadMiddleware.pathExist, validateFields],
+  [UploadMiddleware.pathExist, validateFields],
   UploadController.showImage
 );

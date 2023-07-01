@@ -7,6 +7,7 @@ export interface IProductSchema {
   price?: number;
   image?: string;
   deleted?: boolean;
+  // relationships
   user: Types.ObjectId;
   category: Types.ObjectId;
 }
@@ -34,6 +35,7 @@ const productSchema = new Schema<IProductSchema>({
     type: Boolean,
     default: false,
   },
+  // relationships
   user: {
     type: Schema.Types.ObjectId,
     ref: "User",
@@ -48,7 +50,7 @@ const productSchema = new Schema<IProductSchema>({
 
 productSchema.set("toJSON", {
   transform: (document, returnedObject) => {
-    returnedObject.uid = returnedObject._id.toString();
+    returnedObject.uid = document._id.toString();
     delete returnedObject._id;
     delete returnedObject.__v;
   },

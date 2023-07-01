@@ -5,7 +5,7 @@ import { HydratedDocument } from "mongoose";
 // app
 import { paginatedResponse } from "../helper";
 import { AuthRequest } from "../interfaces/generalsInterface";
-import { IProductSchema, ProductModel } from "../models";
+import { CategoryModel, IProductSchema, ProductModel } from "../models";
 
 class ProductController {
   constructor() {
@@ -44,12 +44,12 @@ class ProductController {
   public async getById(req: Request, res: Response) {
     const { id } = req.params;
 
-    const category = await ProductModel.findById(id)
+    const product = await ProductModel.findById(id)
       .populate("user", ["name", "email", "avatar", "role"])
       .populate("category", ["name"]);
 
     res.json({
-      data: category,
+      data: product,
     });
   }
 
@@ -69,7 +69,12 @@ class ProductController {
 
     await product.save();
 
-    res.json({
+    // add product to category
+    await CategoryModel.findByIdAndUpdate(category_id, {
+      $push: { products: product._id },
+    });
+
+    res.status(201).json({
       data: product,
     });
   }
@@ -79,17 +84,32 @@ class ProductController {
     const { name, description, price, available, category_id } = req.body;
     const { id } = req.params;
 
-    const product = await ProductModel.findByIdAndUpdate(
-      id,
-      {
-        category: category_id,
-        name,
-        description,
-        price,
-        available,
-      },
-      { new: true }
-    );
+    const [product, oldProduct] = await Promise.all([
+      ProductModel.findByIdAndUpdate(
+        id,
+        {
+          category: category_id,
+          name,
+          description,
+          price,
+          available,
+        },
+        { new: true }
+      ),
+      ProductModel.findById(id),
+    ]);
+
+    if (oldProduct?.category !== product?.category) {
+      // deleted oldProduct to category and add product to category
+      await Promise.all([
+        CategoryModel.findByIdAndUpdate(product?.category, {
+          $push: { products: product?._id },
+        }),
+        CategoryModel.findByIdAndUpdate(oldProduct?.category, {
+          $pull: { products: oldProduct?._id },
+        }),
+      ]);
+    }
 
     res.json({
       data: product,
@@ -100,9 +120,11 @@ class ProductController {
   public async delete(req: Request, res: Response) {
     const { id } = req.params;
 
-    await ProductModel.findByIdAndUpdate(id, { deleted: true });
+    await Promise.all([
+      await ProductModel.findByIdAndUpdate(id, { deleted: true }),
+    ]);
 
-    res.json({});
+    res.status(204).json({});
   }
 }
 

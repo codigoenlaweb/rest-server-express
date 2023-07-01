@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 // third party
 import bcryptjs from "bcryptjs";
 // app
-import { paginatedResponse } from "../helper";
+import { errorResponse, paginatedResponse } from "../helper";
 import { UserModel } from "../models";
 
 class UserController {
@@ -13,7 +13,7 @@ class UserController {
     this.update = this.update.bind(this);
     this.delete = this.delete.bind(this);
   }
-  
+
   // Get all Users
   public async getAll(req: Request, res: Response) {
     // query params
@@ -21,7 +21,10 @@ class UserController {
 
     const [data, count] = await Promise.all([
       // get users
-      UserModel.find({ deleted: false })
+      UserModel.find(
+        { deleted: false },
+        "name email password role deleted google avatar"
+      )
         .limit(Number(limit))
         .skip(Number(page) * Number(limit)),
       // get total users
@@ -54,8 +57,15 @@ class UserController {
     // save user
     await user.save();
 
-    res.json({
-      data: user,
+    res.status(201).json({
+      data: {
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        delete: user.deleted,
+        google: user.google,
+        uid: user._id,
+      },
     });
   }
 
@@ -76,8 +86,24 @@ class UserController {
       new: true,
     });
 
+    if (!user) {
+      return errorResponse({
+        res,
+        msg: "The user doesn't exists",
+        value: id,
+        status: 404,
+      });
+    }
+
     res.json({
-      data: user,
+      data: {
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        delete: user.deleted,
+        google: user.google,
+        uid: user._id,
+      },
     });
   }
 
@@ -89,9 +115,7 @@ class UserController {
     // delete user
     await UserModel.findByIdAndUpdate(id, { deleted: true });
 
-    res.json({
-      msg: "delete User",
-    });
+    res.status(204).json({});
   }
 }
 

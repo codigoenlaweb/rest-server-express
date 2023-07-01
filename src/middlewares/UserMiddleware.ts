@@ -44,12 +44,22 @@ class UserMiddleware {
     }
   }
 
-  // check if email exist in db (no blocker)
-  public async emailExistInDb(email: string) {
+  // check if email exist in db (blocker)
+  public async emailExistInDb(req: Request, res: Response, next: NextFunction) {
+    const _id = req.params.id;
+    const email = req.body.email;
     const exitsEmail = await UserModel.findOne({ email });
-    if (exitsEmail) {
-      throw new Error(`The email already exists`);
+
+    if (exitsEmail && exitsEmail._id.toString() !== _id) {
+      return errorResponse({
+        res,
+        msg: `The email already exists`,
+        value: email,
+        status: 400,
+      });
     }
+
+    next();
   }
 }
 

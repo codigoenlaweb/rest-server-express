@@ -18,7 +18,8 @@ class AuthController {
 
     try {
       // verify if the email exists
-      const user = await UserModel.findOne({ email });
+      const user = await UserModel.findOne({ email }, "name email password role deleted google avatar");
+
       if (!user) {
         return errorResponse({
           res,
@@ -38,6 +39,7 @@ class AuthController {
 
       // verify the password
       const validPassword = bcryptjs.compareSync(password, user.password);
+
       if (!validPassword) {
         return errorResponse({
           res,
@@ -70,7 +72,7 @@ class AuthController {
     try {
       const payload = await googleVerify(id_token);
 
-      let user = await UserModel.findOne({ email: payload.email });
+      let user = await UserModel.findOne({ email: payload.email }, "name email password role deleted google avatar");
 
       if (!user) {
         // create the user

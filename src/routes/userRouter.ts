@@ -27,11 +27,11 @@ userRouter.post(
     check("name", "The name is required").not().isEmpty(),
     check("email", "The email is required").not().isEmpty(),
     check("email", "The email is invalid").isEmail(),
-    check("email").custom(UserMiddleware.emailExistInDb),
     check("password", "The password is required").not().isEmpty(),
     check("password", "The password must be 6 characters").isLength({ min: 6 }),
     check("role").custom(UserMiddleware.roleValidate),
     validateFields,
+    UserMiddleware.emailExistInDb,
   ],
   UserController.create
 );
@@ -44,11 +44,11 @@ userRouter.put(
     check("name", "The name is required").not().isEmpty(),
     check("email", "The email is required").not().isEmpty(),
     check("email", "The email is invalid").isEmail(),
-    check("email").custom(UserMiddleware.emailExistInDb),
     check("password", "The password is required").not().isEmpty(),
     check("password", "The password must be 6 characters").isLength({ min: 6 }),
     check("role").custom(UserMiddleware.roleValidate),
     validateFields,
+    UserMiddleware.emailExistInDb,
   ],
   UserController.update
 );
