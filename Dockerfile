@@ -1,5 +1,5 @@
 # Dependencias de produccion
-FROM node:19.2-alpine3.16 as prod-deps
+FROM node:19.5.0-alpine as prod-deps
 # cd app
 WORKDIR /app
 # copiar package.json
@@ -9,7 +9,7 @@ RUN npm install --prod
 
 
 # Runner
-FROM node:19.2-alpine3.16 as runner
+FROM node:19.5.0-alpine as runner
 # cd app
 WORKDIR /app
 # copiar dependencias de produccion
